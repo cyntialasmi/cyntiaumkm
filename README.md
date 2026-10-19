@@ -1,80 +1,93 @@
-# Katalog UMKM + Order WhatsApp
+# Cyntia Indomaret — Katalog Produk UMKM + Pemesanan WhatsApp
 
-Template workshop vibe coding Creative Hub App Talent (CHAT) 2026. Repo ini berisi tampilan aplikasi katalog UMKM; tugasmu merangkainya menjadi sistem utuh dengan bantuan AI: database, login admin, keamanan, dan pemesanan lewat WhatsApp.
+Aplikasi katalog digital interaktif untuk **Cyntia Indomaret**, dirancang untuk menampilkan produk-produk lokal berkualitas tinggi (dari dapur rumahan hingga kerajinan tangan) dan mempermudah pelanggan melakukan pemesanan langsung melalui WhatsApp hanya dalam beberapa klik.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fandixurniawan%2Fkatalog-umkm&project-name=katalog-umkm&repository-name=katalog-umkm)
+Aplikasi ini dibangun menggunakan arsitektur modern Next.js 16 dengan Server Components, Server Actions, Tailwind CSS 4, dan backend Supabase (Database & Auth).
 
-## Langkah awal
+---
 
-1. **Salin repo ke akun GitHub-mu.** Klik tombol **Deploy with Vercel** di atas. Vercel akan membuat repo baru di akun GitHub-mu dan langsung men-deploy-nya. Setelah selesai, buka link Vercel-mu: katalog tampil dengan data contoh.
-2. **Buat proyek Supabase.** Masuk ke [supabase.com](https://supabase.com) dengan akun GitHub, lalu buat proyek baru. Simpan password database di tempat aman.
-3. **Siapkan database.** Di Supabase, buka **SQL Editor**, tempel seluruh isi `docs/schema.sql`, lalu klik **Run**. Tabel `produk` beserta data awal akan terbentuk.
-4. **Siapkan akun admin.** Ikuti panduan akun admin yang dibagikan mentor. Setelah itu matikan pendaftaran akun baru di **Authentication > Sign In / Providers**.
-5. **Isi environment variable di Vercel.** Buka proyekmu di Vercel > **Settings > Environment Variables**, lalu isi tiga variabel dari `.env.example`. Nilainya ada di Supabase > **Project Settings > API**. Setelah itu lakukan **Redeploy**.
-6. **Clone repo ke laptop.**
+## Fitur Utama
 
-   ```bash
-   git clone https://github.com/<akunmu>/<nama-repo>.git
-   cd <nama-repo>
-   npm install
-   ```
+### 🛍️ Untuk Pelanggan (Pengunjung)
+- **Katalog Produk Terintegrasi Database (US-01):** Menampilkan seluruh produk toko secara *server-side* langsung dari tabel Supabase dengan kartu produk yang rapi, harga dalam format Rupiah, dan status jika katalog kosong.
+- **Halaman Detail Produk (US-02):** Informasi rinci setiap produk yang memuat foto berkualitas, kategori, nama, harga, dan deskripsi lengkap, dilengkapi penanganan halaman 404 jika produk tidak ditemukan.
+- **Pemesanan Cepat via WhatsApp (US-03):** Tombol pemesanan langsung yang membuka WhatsApp dengan draf pesan otomatis yang telah terisi nama produk dan harga tanpa perlu mengetik ulang.
 
-7. **Buat file `.env.local`.** Salin `.env.example` menjadi `.env.local`, lalu isi dengan nilai yang sama seperti di Vercel.
-8. **Jalankan di laptop.**
+### 🔐 Untuk Pemilik Toko (Admin)
+- **Autentikasi Admin Aman (US-04):** Sistem login aman berbasis email dan password menggunakan Supabase Auth dan cookie sesi terenkripsi (`@supabase/ssr`), serta fitur keluar (*logout*).
+- **Ganti Password (US-05):** Pengelolaan kredensial pemilik toko dengan validasi ketat di sisi server (minimal 8 karakter dan konfirmasi kecocokan).
+- **Proteksi Akses Rute Admin (US-06):** Perlindungan rute `/admin` menggunakan proxy Next.js 16 (`proxy.js`), di mana pengunjung yang belum terautentikasi otomatis dialihkan ke halaman login.
 
-   ```bash
-   npm run dev
-   ```
+---
 
-   Buka `http://localhost:3000`.
+## Teknologi yang Digunakan
 
-## Alur kerja
+- **Framework:** Next.js 16 (App Router, JavaScript, Turbopack)
+- **Styling:** Tailwind CSS 4
+- **Database & Autentikasi:** Supabase (`@supabase/supabase-js`, `@supabase/ssr`, PostgreSQL dengan Row Level Security)
+- **Integrasi Komunikasi:** WhatsApp Click-to-Chat API
+- **Deployment:** Vercel
 
-Kerjakan satu user story setiap kali, lalu simpan dan kirim perubahan:
+---
 
-```bash
-git add .
-git commit -m "US-01: katalog dari database"
-git push
+## Struktur Folder
+
+```
+├── app/
+│   ├── page.jsx                    # Katalog utama (US-01)
+│   ├── layout.jsx                  # Root layout & header/footer
+│   ├── not-found.jsx               # Halaman 404 kustom
+│   ├── produk/[id]/page.jsx        # Detail produk (US-02)
+│   └── admin/
+│       ├── page.jsx                # Dasbor admin
+│       ├── actions.js              # Server Actions (login, logout, ganti password)
+│       ├── login/page.jsx          # Halaman masuk admin (US-04)
+│       └── password/page.jsx       # Halaman ganti password (US-05)
+├── components/                     # Komponen antarmuka (KartuProduk, TombolWhatsApp, NavAdmin, dll.)
+├── lib/
+│   ├── toko.js                     # Identitas toko & nomor WhatsApp
+│   ├── format.js                   # Format mata uang Rupiah
+│   └── supabase/                   # Inisialisasi client Supabase server & sesi cookie
+├── docs/                           # Dokumentasi PRD, arsitektur, skema DB, dan checklist
+├── proxy.js                        # Proxy middleware proteksi rute admin (US-06)
+└── PROMPTS.md                      # Jurnal prompt pengembangan aplikasi
 ```
 
-Setiap `git push`, Vercel otomatis men-deploy versi terbaru. Cek hasilnya di link Vercel-mu.
+---
 
-Urutan yang disarankan: US-01, US-02, US-03, US-04, US-05, US-06, lalu fitur bonus. Daftar lengkap ada di `docs/user-stories.md`.
+## Langkah Menjalankan Aplikasi
 
-## Isi repo
+### 1. Salin Repositori & Instal Dependensi
+```bash
+git clone <url-repo-anda>
+cd cyntiaumkm
+npm install
+```
 
-| File atau folder | Isi |
-| --- | --- |
-| `AGENTS.md` | Aturan untuk AI agent, dibaca sebelum setiap prompt |
-| `DESIGN.md` | Panduan warna, huruf, dan komponen |
-| `PROMPTS.md` | Jurnal prompt, wajib diisi |
-| `docs/` | Problem statement, PRD, user story, rancangan teknis, skema database, checklist |
-| `lib/toko.js` | Nama toko, nomor WhatsApp, alamat, jam buka |
-| `app/` | Halaman aplikasi |
-| `components/` | Komponen tampilan |
+### 2. Konfigurasi Environment Variables
+Buat file `.env.local` di root proyek dengan variabel berikut (diambil dari dashboard Supabase):
+```env
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
+```
 
-## Menyesuaikan dengan usahamu
+> **Catatan Keamanan:** Semua variabel hanya digunakan di sisi server. Jangan menambahkan awalan `NEXT_PUBLIC_` untuk menjaga keamanan kredensial.
 
-- Identitas toko: ubah `lib/toko.js`.
-- Warna: ubah bagian `@theme` di `app/globals.css` (lihat `DESIGN.md`).
-- Produk: ubah langsung di Supabase > **Table Editor > produk**.
+### 3. Siapkan Database
+Jalankan skrip SQL di `docs/schema.sql` pada menu **SQL Editor** di dashboard Supabase untuk membuat tabel `produk` dan mengaktifkan Row Level Security (RLS).
 
-## Aturan penting
+### 4. Jalankan Server Pengembangan
+```bash
+npm run dev
+```
+Buka browser di `http://localhost:3000`.
 
-- Jangan menyimpan kunci atau password di kode, dan jangan push file `.env.local`.
-- Jangan memberi awalan `NEXT_PUBLIC_` pada environment variable.
-- Isi `PROMPTS.md` setiap menyelesaikan fitur.
+---
 
-## Sebelum mengumpulkan
+## Tentang Aplikasi Ini
 
-1. Jalankan semua poin di `docs/checklist-keamanan.md` dan `docs/checklist-pengujian.md` pada link Vercel.
-2. Lengkapi bagian di bawah ini.
-3. Push perubahan terakhir sebelum batas waktu.
-
-## Tentang aplikasi ini
-
-- **Nama usaha:**
-- **Pembuat:**
-- **Link aplikasi:**
-- **Fitur bonus yang dikerjakan:**
+- **Nama usaha:** Cyntia Indomaret
+- **Tagline:** Produk rumahan dari dapur dan perajin lokal, siap dipesan lewat WhatsApp.
+- **Nomor WhatsApp Toko:** 6282283861533
+- **Fitur wajib selesai:** US-01, US-02, US-03, US-04, US-05, US-06 (100% lengkap)
